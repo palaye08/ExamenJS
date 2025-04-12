@@ -1,0 +1,45 @@
+<!-- <!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Gestion de Stock</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-center">Connexion</h1>
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label for="prenom" class="block mb-2 text-sm font-medium text-gray-700">Prénom</label>
+                <input type="text" id="prenom" name="prenom" class="w-full p-2 border border-gray-300 rounded" required>
+            </div>
+            <div>
+                <label for="telephone" class="block mb-2 text-sm font-medium text-gray-700">Téléphone</label>
+                <input type="tel" id="telephone" name="telephone" class="w-full p-2 border border-gray-300 rounded" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Se connecter</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const prenom = document.getElementById('prenom').value;
+            const telephone = document.getElementById('telephone').value;
+            
+            // Normalement ici on vérifierait les identifiants avec une API
+            // Mais pour cette démo, on va simplement rediriger
+            
+            // Stocker les infos utilisateur en session
+            sessionStorage.setItem('user', JSON.stringify({
+                prenom: prenom,
+                telephone: telephone
+            }));
+            
+            // Rediriger vers la page d'accueil
+            window.location.href = 'page/accueil.html';
+        });
+    </script>
+</body>
+</html> -->

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Stock</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto p-4">
+        <header class="mb-6">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold">Gestion de Stock - Tissus</h1>
+                <div id="userInfo" class="text-right"></div>
+            </div>
+        </header>
+
+        <div class="bg-white p-6 rounded shadow-md mb-6">
+            <form id="stockForm" class="grid grid-cols-1 md:grid-cols-2 gap-4" novalidate>
+                <div>
+                    <label for="libelle" class="block mb-2 text-sm font-medium text-gray-700">Libellé</label>
+                    <input type="text" id="libelle" name="libelle" class="w-full p-2 border border-gray-300 rounded">
+                    <p id="libelle-error" class="text-red-500 text-xs mt-1 hidden">Le libellé est requis</p>
+                </div>
+
+                <div>
+                    <label for="fournisseur" class="block mb-2 text-sm font-medium text-gray-700">Fournisseur</label>
+                    <div class="flex items-center gap-2">
+                        <select id="fournisseur" name="fournisseur" class="w-full p-2 border border-gray-300 rounded">
+                            <option value="">Sélectionner un fournisseur</option>
+                        </select>
+                        <button type="button" id="addFournisseurBtn" class="bg-gray-200 p-2 rounded-full">
+                            <i class="fas fa-plus text-gray-600"></i>
+                        </button>
+                    </div>
+                    <p id="fournisseur-error" class="text-red-500 text-xs mt-1 hidden">Veuillez sélectionner un fournisseur</p>
+                </div>
+
+                <div>
+                    <label for="categorie" class="block mb-2 text-sm font-medium text-gray-700">Catégorie</label>
+                    <div class="flex items-center gap-2">
+                        <select id="categorie" name="categorie" class="w-full p-2 border border-gray-300 rounded">
+                            <option value="">Sélectionner une catégorie</option>
+                        </select>
+                        <button type="button" id="addCategorieBtn" class="bg-gray-200 p-2 rounded-full">
+                            <i class="fas fa-plus text-gray-600"></i>
+                        </button>
+                    </div>
+                    <p id="categorie-error" class="text-red-500 text-xs mt-1 hidden">Veuillez sélectionner une catégorie</p>
+                </div>
+
+                <div class="flex items-start gap-4">
+                    <div class="w-full">
+                        <label for="image" class="block mb-2 text-sm font-medium text-gray-700">Image</label>
+                        <div id="imagePreviewContainer" class="border border-gray-300 rounded h-32 w-full bg-gray-200 flex items-center justify-center mb-2">
+                            <i class="fas fa-image text-gray-400 text-4xl"></i>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-1">Référence: <span id="referenceDisplay">---</span></p>
+                        <input type="file" id="imageInput" name="image" class="hidden">
+                        <button type="button" id="selectImageBtn" class="text-sm bg-gray-300 px-3 py-1 rounded hover:bg-gray-400">Sélectionner une image</button>
+                        <p id="image-error" class="text-red-500 text-xs mt-1 hidden">Une image est requise</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="quantite" class="block mb-2 text-sm font-medium text-gray-700">Quantité</label>
+                    <input type="number" id="quantite" name="quantite" min="1" class="w-full p-2 border border-gray-300 rounded">
+                    <p id="quantite-error" class="text-red-500 text-xs mt-1 hidden">La quantité est requise et doit être supérieure à 0</p>
+                </div>
+
+                <div>
+                    <label for="unite" class="block mb-2 text-sm font-medium text-gray-700">Unité</label>
+                    <div class="flex items-center gap-2">
+                        <select id="unite" name="unite" class="w-full p-2 border border-gray-300 rounded">
+                            <option value="">Sélectionner une unité</option>
+                        </select>
+                        <button type="button" id="addUniteBtn" class="bg-gray-200 p-2 rounded-full">
+                            <i class="fas fa-plus text-gray-600"></i>
+                        </button>
+                    </div>
+                    <p id="unite-error" class="text-red-500 text-xs mt-1 hidden">Veuillez sélectionner une unité</p>
+                </div>
+
+                <div>
+                    <label for="prix" class="block mb-2 text-sm font-medium text-gray-700">Prix</label>
+                    <input type="number" id="prix" name="prix" min="0" step="0.01" class="w-full p-2 border border-gray-300 rounded">
+                    <p id="prix-error" class="text-red-500 text-xs mt-1 hidden">Le prix est requis et doit être supérieur ou égal à 0</p>
+                </div>
+
+                <div class="md:col-span-2">
+                    <button type="submit" id="submitBtn" class="bg-black text-white py-2 px-6 rounded hover:bg-gray-800">VALIDER</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="bg-white overflow-x-auto rounded shadow-md">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-black">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                            Libellé
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                            Catégorie
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                            Quantité
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                            Prix
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                            Fournisseur
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                            Unité
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="stockTableBody" class="bg-white divide-y divide-gray-200">
+                    <!-- Les données seront injectées ici -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal pour ajouter un fournisseur -->
+    <div id="fournisseurModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded w-full max-w-md">
+            <h2 class="text-xl font-bold mb-4 text-center">Ajouter un Fournisseur</h2>
+            <form id="fournisseurForm" class="space-y-4" novalidate>
+                <div>
+                    <label for="prenom" class="block mb-2 text-sm font-medium text-gray-700">Prénom</label>
+                    <input type="text" id="fournisseurPrenom" class="w-full p-2 border border-gray-300 rounded">
+                    <p id="fournisseurPrenom-error" class="text-red-500 text-xs mt-1 hidden">Le prénom est requis</p>
+                </div>
+                <div>
+                    <label for="nom" class="block mb-2 text-sm font-medium text-gray-700">Nom</label>
+                    <input type="text" id="fournisseurNom" class="w-full p-2 border border-gray-300 rounded">
+                    <p id="fournisseurNom-error" class="text-red-500 text-xs mt-1 hidden">Le nom est requis</p>
+                </div>
+                <div>
+                    <label for="telephone" class="block mb-2 text-sm font-medium text-gray-700">Téléphone</label>
+                    <input type="tel" id="fournisseurTelephone" class="w-full p-2 border border-gray-300 rounded">
+                    <p id="fournisseurTelephone-error" class="text-red-500 text-xs mt-1 hidden">Le téléphone est requis</p>
+                </div>
+                <div>
+                    <label for="adresse" class="block mb-2 text-sm font-medium text-gray-700">Adresse</label>
+                    <input type="text" id="fournisseurAdresse" class="w-full p-2 border border-gray-300 rounded">
+                    <p id="fournisseurAdresse-error" class="text-red-500 text-xs mt-1 hidden">L'adresse est requise</p>
+                </div>
+                <div class="flex justify-between">
+                    <button type="submit" class="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600">Enregistrer</button>
+                    <button type="button" id="cancelFournisseur" class="bg-red-500 text-white py-2 px-6 rounded hover:bg-red-600">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal pour ajouter une catégorie -->
+    <div id="categorieModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded w-full max-w-md">
+            <h2 class="text-xl font-bold mb-4 text-center">Ajouter une Catégorie</h2>
+            <form id="categorieForm" class="space-y-4" novalidate>
+                <div>
+                    <label for="nomCategorie" class="block mb-2 text-sm font-medium text-gray-700">Nom de la catégorie</label>
+                    <input type="text" id="nomCategorie" class="w-full p-2 border border-gray-300 rounded">
+                    <p id="nomCategorie-error" class="text-red-500 text-xs mt-1 hidden">Le nom de la catégorie est requis</p>
+                </div>
+                <div class="flex justify-between">
+                    <button type="submit" class="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600">Enregistrer</button>
+                    <button type="button" id="cancelCategorie" class="bg-red-500 text-white py-2 px-6 rounded hover:bg-red-600">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="uniteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded w-full max-w-md">
+            <h2 class="text-xl font-bold mb-4 text-center">Ajouter une Unité</h2>
+            <form id="uniteForm" class="space-y-4">
+                <div>
+                    <label for="nomUnite" class="block mb-2 text-sm font-medium text-gray-700">Nom de l'unité</label>
+                    <input type="text" id="nomUnite" class="w-full p-2 border border-gray-300 rounded" required>
+                </div>
+                <div>
+                    <label for="conversion" class="block mb-2 text-sm font-medium text-gray-700">Valeur de conversion (optionnelle)</label>
+                    <input type="number" id="conversion" step="0.0001" min="0" class="w-full p-2 border border-gray-300 rounded">
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-black">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                    Libellé
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                    Conversion
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="unitesTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Les données seront injectées ici -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="flex justify-between">
+                    <button type="submit" class="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600">Enregistrer</button>
+                    <button type="button" id="cancelUnite" class="bg-red-500 text-white py-2 px-6 rounded hover:bg-red-600">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Script pour la validation des formulaires
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fonction pour valider le formulaire principal
+            const stockForm = document.getElementById('stockForm');
+            stockForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                let isValid = true;
+                
+                // Validation du libellé
+                const libelle = document.getElementById('libelle');
+                const libelleError = document.getElementById('libelle-error');
+                if (!libelle.value.trim()) {
+                    libelleError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    libelleError.classList.add('hidden');
+                }
+                
+                // Validation du fournisseur
+                const fournisseur = document.getElementById('fournisseur');
+                const fournisseurError = document.getElementById('fournisseur-error');
+                if (!fournisseur.value) {
+                    fournisseurError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    fournisseurError.classList.add('hidden');
+                }
+                
+                // Validation de la catégorie
+                const categorie = document.getElementById('categorie');
+                const categorieError = document.getElementById('categorie-error');
+                if (!categorie.value) {
+                    categorieError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    categorieError.classList.add('hidden');
+                }
+                
+                // Validation de l'image (si nécessaire)
+                const imageInput = document.getElementById('imageInput');
+                const imageError = document.getElementById('image-error');
+                if (imageInput.files.length === 0) {
+                    imageError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    imageError.classList.add('hidden');
+                }
+                
+                // Validation de la quantité
+                const quantite = document.getElementById('quantite');
+                const quantiteError = document.getElementById('quantite-error');
+                if (!quantite.value || parseInt(quantite.value) < 1) {
+                    quantiteError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    quantiteError.classList.add('hidden');
+                }
+                
+                // Validation de l'unité
+                const unite = document.getElementById('unite');
+                const uniteError = document.getElementById('unite-error');
+                if (!unite.value) {
+                    uniteError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    uniteError.classList.add('hidden');
+                }
+                
+                // Validation du prix
+                const prix = document.getElementById('prix');
+                const prixError = document.getElementById('prix-error');
+                if (!prix.value || parseFloat(prix.value) < 0) {
+                    prixError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    prixError.classList.add('hidden');
+                }
+                
+                // Si tout est valide, soumettre le formulaire
+                if (isValid) {
+                    // Vous pouvez ici soumettre le formulaire ou appeler la fonction existante
+                    console.log('Formulaire valide - Soumission...');
+                    // stockForm.submit(); // Décommentez si vous souhaitez soumettre le formulaire
+                }
+            });
+            
+            // Validation du formulaire fournisseur
+            const fournisseurForm = document.getElementById('fournisseurForm');
+            fournisseurForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                let isValid = true;
+                
+                // Validation du prénom
+                const prenom = document.getElementById('fournisseurPrenom');
+                const prenomError = document.getElementById('fournisseurPrenom-error');
+                if (!prenom.value.trim()) {
+                    prenomError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    prenomError.classList.add('hidden');
+                }
+                
+                // Validation du nom
+                const nom = document.getElementById('fournisseurNom');
+                const nomError = document.getElementById('fournisseurNom-error');
+                if (!nom.value.trim()) {
+                    nomError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    nomError.classList.add('hidden');
+                }
+                
+                // Validation du téléphone
+                const telephone = document.getElementById('fournisseurTelephone');
+                const telephoneError = document.getElementById('fournisseurTelephone-error');
+                if (!telephone.value.trim()) {
+                    telephoneError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    telephoneError.classList.add('hidden');
+                }
+                
+                // Validation de l'adresse
+                const adresse = document.getElementById('fournisseurAdresse');
+                const adresseError = document.getElementById('fournisseurAdresse-error');
+                if (!adresse.value.trim()) {
+                    adresseError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    adresseError.classList.add('hidden');
+                }
+                
+                // Si tout est valide, soumettre le formulaire
+                if (isValid) {
+                    console.log('Formulaire fournisseur valide - Soumission...');
+                    // Logique de soumission du formulaire
+                }
+            });
+            
+            // Validation du formulaire catégorie
+            const categorieForm = document.getElementById('categorieForm');
+            categorieForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                let isValid = true;
+                
+                // Validation du nom de catégorie
+                const nomCategorie = document.getElementById('nomCategorie');
+                const nomCategorieError = document.getElementById('nomCategorie-error');
+                if (!nomCategorie.value.trim()) {
+                    nomCategorieError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    nomCategorieError.classList.add('hidden');
+                }
+                
+                // Si tout est valide, soumettre le formulaire
+                if (isValid) {
+                    console.log('Formulaire catégorie valide - Soumission...');
+                    // Logique de soumission du formulaire
+                }
+            });
+            
+            // Validation des champs d'unité lors de l'ajout au tableau
+            const addUniteToTableBtn = document.getElementById('addUniteToTable');
+            addUniteToTableBtn.addEventListener('click', function() {
+                let isValid = true;
+                
+                // Validation du nom d'unité
+                const nomUnite = document.getElementById('nomUnite');
+                const nomUniteError = document.getElementById('nomUnite-error');
+                if (!nomUnite.value.trim()) {
+                    nomUniteError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    nomUniteError.classList.add('hidden');
+                }
+                
+                // Validation de la conversion
+                const conversion = document.getElementById('conversion');
+                const conversionError = document.getElementById('conversion-error');
+                if (!conversion.value || parseFloat(conversion.value) <= 0) {
+                    conversionError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    conversionError.classList.add('hidden');
+                }
+                
+                // Si tout est valide, ajouter à la table
+                if (isValid) {
+                    console.log('Unité valide - Ajout au tableau...');
+                    // Logique d'ajout à la table
+                }
+            });
+            
+            // Validation du formulaire unité
+            const uniteForm = document.getElementById('uniteForm');
+            uniteForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                // Vérifiez si le tableau contient des éléments
+                const unitesTable = document.getElementById('unitesTableBody');
+                if (unitesTable.children.length === 0) {
+                    alert('Veuillez ajouter au moins une unité au tableau');
+                    return false;
+                }
+                
+                console.log('Formulaire unité valide - Soumission...');
+                // Logique de soumission du formulaire
+            });
+        });
+    </script>
+    
+    <script src="../js/accueil.js"></script>
+</body>
+</html>

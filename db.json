@@ -1,0 +1,81 @@
+{
+  "produits": [
+    {
+      "id": "2",
+      "libelle": "Tioub",
+      "categorieId": 1,
+      "quantite": 100,
+      "uniteId": 1,
+      "prix": 5000,
+      "fournisseurId": 1,
+      "reference": "Baz-Tissu-0002",
+      "imageUrl": null,
+      "dateCreation": "2025-04-11T10:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "libelle": "Wax",
+      "categorieId": 1,
+      "quantite": 100,
+      "uniteId": 1,
+      "prix": 5000,
+      "fournisseurId": 1,
+      "reference": "Baz-Tissu-0003",
+      "imageUrl": null,
+      "dateCreation": "2025-04-11T10:00:00.000Z"
+    },
+    {
+      "id": "e35a",
+      "libelle": "khartoum",
+      "categorieId": 1,
+      "quantite": 20,
+      "uniteId": 1,
+      "prix": 2000,
+      "fournisseurId": 1,
+      "reference": "Baz-Tissu-3260",
+      "imageUrl": null,
+      "dateCreation": "2025-04-11T19:21:02.641Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "1",
+      "nom": "Tissu"
+    },
+    {
+      "id": "2",
+      "nom": "Accessoire"
+    }
+  ],
+  "unites": [
+    {
+      "id": "1",
+      "nom": "mètre"
+    },
+    {
+      "id": "2",
+      "nom": "pièce"
+    },
+    {
+      "id": "ddd9",
+      "nom": "yard",
+      "conversion": "0.9443"
+    }
+  ],
+  "fournisseurs": [
+    {
+      "id": "1",
+      "prenom": "Mamadou",
+      "nom": "Diouf",
+      "telephone": "778123456",
+      "adresse": "Dakar, Sénégal"
+    },
+    {
+      "id": "a6f5",
+      "prenom": "Abdoulaye",
+      "nom": "Diop",
+      "telephone": "772002430",
+      "adresse": "Dakar ,Soumbedioune"
+    }
+  ]
+}

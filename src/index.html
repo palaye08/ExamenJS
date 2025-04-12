@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Gestion de Stock</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-center">Connexion</h1>
+        
+        <!-- Message d'erreur général -->
+        <div id="errorMessage" class="hidden mb-4 p-3 bg-red-100 border-l-4 border-red-500 text-red-700">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <span id="errorText"></span>
+        </div>
+        
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label for="prenom" class="block mb-2 text-sm font-medium text-gray-700">Prénom</label>
+                <input type="text" id="prenom" name="prenom" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <p id="prenomError" class="hidden mt-1 text-sm text-red-600"></p>
+            </div>
+            <div>
+                <label for="telephone" class="block mb-2 text-sm font-medium text-gray-700">Téléphone</label>
+                <input type="tel" id="telephone" name="telephone" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <p id="telephoneError" class="hidden mt-1 text-sm text-red-600"></p>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200 flex items-center justify-center">
+                <span id="submitText">Se connecter</span>
+                <i id="spinner" class="fas fa-spinner fa-spin ml-2 hidden"></i>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Réinitialiser les messages d'erreur
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('prenomError').classList.add('hidden');
+            document.getElementById('telephoneError').classList.add('hidden');
+            
+            // Afficher le spinner
+            const submitBtn = document.querySelector('#loginForm button[type="submit"]');
+            const spinner = document.getElementById('spinner');
+            const submitText = document.getElementById('submitText');
+            
+            submitText.textContent = 'Connexion en cours...';
+            spinner.classList.remove('hidden');
+            submitBtn.disabled = true;
+            
+            // Récupérer les valeurs
+            const prenom = document.getElementById('prenom').value.trim();
+            const telephone = document.getElementById('telephone').value.trim();
+            
+            // Validation simple
+            let isValid = true;
+            
+            if (!prenom) {
+                document.getElementById('prenomError').textContent = "Veuillez entrer votre prénom";
+                document.getElementById('prenomError').classList.remove('hidden');
+                isValid = false;
+            }
+            
+            if (!telephone) {
+                document.getElementById('telephoneError').textContent = "Veuillez entrer votre numéro de téléphone";
+                document.getElementById('telephoneError').classList.remove('hidden');
+                isValid = false;
+            } else if (!/^[0-9]{9,}$/.test(telephone)) {
+                document.getElementById('telephoneError').textContent = "Numéro de téléphone invalide";
+                document.getElementById('telephoneError').classList.remove('hidden');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                submitText.textContent = 'Se connecter';
+                spinner.classList.add('hidden');
+                submitBtn.disabled = false;
+                return;
+            }
+            
+            // Simuler une requête API avec timeout
+            try {
+                // Remplacez ceci par une vraie requête API dans votre implémentation
+                const response = await simulateApiRequest(prenom, telephone);
+                
+                if (response.success) {
+                    // Stocker les infos utilisateur en session
+                    sessionStorage.setItem('user', JSON.stringify({
+                        prenom: prenom,
+                        telephone: telephone
+                    }));
+                    
+                    // Rediriger vers la page d'accueil
+                    window.location.href = 'page/accueil.html';
+                } else {
+                    showErrorMessage("Identifiants incorrects. Veuillez vérifier vos informations.");
+                }
+            } catch (error) {
+                showErrorMessage("Une erreur est survenue. Veuillez réessayer.");
+                console.error('Erreur:', error);
+            } finally {
+                submitText.textContent = 'Se connecter';
+                spinner.classList.add('hidden');
+                submitBtn.disabled = false;
+            }
+        });
+        
+        // Fonction pour simuler une requête API (à remplacer par une vraie requête)
+        function simulateApiRequest(prenom, telephone) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // Dans une vraie application, vous feriez une requête fetch vers votre API
+                    // Ici on simule une réponse avec des identifiants "valides"
+                    const isValid = prenom === "Admin" && telephone === "778123456";
+                    resolve({
+                        success: isValid,
+                        message: isValid ? "Connexion réussie" : "Identifiants incorrects"
+                    });
+                }, 1000);
+            });
+        }
+        
+        // Fonction pour afficher un message d'erreur général
+        function showErrorMessage(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            
+            errorText.textContent = message;
+            errorMessage.classList.remove('hidden');
+            
+            // Focus sur le premier champ
+            document.getElementById('prenom').focus();
+        }
+        
+        // Gestion des champs pour effacer les erreurs lors de la saisie
+        document.getElementById('prenom').addEventListener('input', function() {
+            document.getElementById('prenomError').classList.add('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+        });
+        
+        document.getElementById('telephone').addEventListener('input', function() {
+            document.getElementById('telephoneError').classList.add('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+        });
+    </script>
+</body>
+</html>
