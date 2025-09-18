@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-new')
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub_creds')
         DOCKER_IMAGE = 'palaye769/examenjs'
         DOCKER_TAG = "${BUILD_NUMBER}"
     }
