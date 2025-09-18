@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('dockerhub_creds')
+        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-new')
         DOCKER_IMAGE = 'palaye769/examenjs'
         DOCKER_TAG = "${BUILD_NUMBER}"
     }
@@ -40,7 +40,7 @@ pipeline {
             steps {
                 echo 'Pushing image to Docker Hub...'
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub_creds') {
+                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-new') {
                         def image = docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}")
                         image.push()
                         image.push('latest')
