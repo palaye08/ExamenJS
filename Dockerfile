@@ -24,5 +24,5 @@ RUN adduser -S nextjs -u 1001
 RUN chown -R nextjs:nodejs /app
 USER nextjs
 
-# Commande pour démarrer l'application
+# Commande pour démarrer l'application a nouveau
 CMD ["npm", "start"]
