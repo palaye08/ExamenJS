@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('dockerhub_creds')
-        DOCKER_IMAGE = 'palaye769/ExamenJS'
+        DOCKER_IMAGE = 'palaye769/examenjs'
         DOCKER_TAG = "${BUILD_NUMBER}"
     }
     
@@ -40,7 +40,7 @@ pipeline {
             steps {
                 echo 'Pushing image to Docker Hub...'
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub_creds') {
                         def image = docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}")
                         image.push()
                         image.push('latest')
